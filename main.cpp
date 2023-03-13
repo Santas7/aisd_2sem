@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include <iostream>
+
 class Set {
 private:
     struct TreeNode {
@@ -15,7 +17,7 @@ private:
     };
     TreeNode* _root;
 
-    // рекурсивная функция для удаления всех узлов дерева
+    // рекурсивный метод для удаления всех узлов дерева
     void clear(TreeNode* root) {
         if (root) {
             clear(root->left);
@@ -24,7 +26,7 @@ private:
         }
     }
 
-    // рекурсивная функция для копирования дерева
+    // рекурсивный метод для копирования дерева
     TreeNode* copy_tree(TreeNode* root) {
         if (!root) 
             return nullptr; 
@@ -35,7 +37,7 @@ private:
         return copy_node;
     }
 
-    // рекурсивная функция для вставки узла в дерево
+    // рекурсивный метод для вставки узла в дерево
     bool insert_(TreeNode*& root, int key) {
         if (!root) {
             root = new TreeNode(key);
@@ -51,7 +53,7 @@ private:
             return insert_(root->right, key);
     }
 
-    // рекурсивная функция для поиска узла в дереве
+    // рекурсивный метод для поиска узла в дереве
     bool contains_(TreeNode* root, int key) const {
         if (!root) 
             return false;
@@ -66,7 +68,7 @@ private:
             return contains_(root->right, key);
     }
 
-    // рекурсивная функция для удаления узла из дерева
+    // рекурсивный метод для удаления узла из дерева
     bool erase_(TreeNode*& root, int key) {
         if (!root) 
             return false;
@@ -100,13 +102,32 @@ private:
         }
     }
 
-    // рекурсивная функция для печати содержимого дерева
+    // рекурсивный метод для печати содержимого дерева
     void print_(TreeNode* root) const {
         if (!root) return;
         
         print_(root->left);
         std::cout << root->value << " ";
         print_(root->right);
+    }
+
+
+    // метод для объединения двух множеств
+    Set& union_set(TreeNode* root, Set& tree) {
+        if (!root) return;
+        tree.insert(root->value);
+        union_set(root->left, tree);
+        union_set(root->right, tree);
+        return tree;
+    }
+
+    // метод для нахождения симметрической разности двух множеств
+    Set& symmetricDifference(TreeNode* root1, TreeNode* root2) {
+        Set tree1, tree2, result;
+        tree1 = union_set(root1, tree1);
+        tree2 = union_set(root2, tree2);
+        // ...
+        return result;
     }
 
     Set& operator=(const Set& tree) {
