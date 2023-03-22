@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <vector>
 
 class Set {
 private:
@@ -56,10 +57,9 @@ public:
     bool contains(const int& value);
 
     // Задача (вар 2)
-    // метод геттер для получения значения
-    int get_value_by_set();
-    // для пробежки по элементам множества
-    Set running_set(const Set& s_1, const Set& s_2);
+    void get_vector(TreeNode* root, std::vector<int>& vector);
+    // метод пересечения двух множеств
+    Set intersection_set(const Set& s_1, const Set& s_2);
     // метод объединения двух множеств
     Set union_set(const Set& s_1, const Set& s_2);
     // метод cимметрической разности двух множеств
