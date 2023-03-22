@@ -1,4 +1,7 @@
 #include "Set.h"
+#include <algorithm>
+
+
 
 // конструктор
 Set::Set() : _root(nullptr) {}
@@ -121,29 +124,90 @@ Set& Set::operator=(const Set& tree) {
 }
 
 // Задача к Л/Р (вар 2)
-int Set::get_value_by_set() { return _root->value; }
 
-// для пробежки по элементам множества
-Set Set::running_set(const Set& s_1, const Set& s_2) {
-    Set tmp = s_1;
-    tmp.insert(get_value_by_set());
-    return tmp;
+void Set::get_vector(TreeNode* root, std::vector<int>& vector) {
+    if (root == nullptr) {
+        return;
+    }
+    get_vector(root->left, vector);
+    vector.push_back(root->value);
+    get_vector(root->right, vector);
 }
 
+// метод пересечения двух множеств
+Set Set::intersection_set(const Set& s_1, const Set& s_2) {
+    Set result_set; // создаем результирующее множество
+    std::vector<int> vector_for_set_1, vector_for_set_2, result_vector;
+
+    // формируем два вектора для каждого множества
+    get_vector(s_1._root, vector_for_set_1);
+    get_vector(s_2._root, vector_for_set_2);
+
+    // изменяем размер результируещего вектора
+    result_vector.resize(vector_for_set_1.size() + vector_for_set_2.size());
+
+    for (const auto& item1 : vector_for_set_1) {
+        for (const auto& item2 : vector_for_set_2) {
+            if (item1 == item2) {
+                result_vector.push_back(item1);
+                break;
+            }
+        }
+    }
+    
+    // заполнение нового множества на основе результирующего вектора 
+    for (int i = 0; i < result_vector.size(); i++)
+        result_set.insert(result_vector[i]);
+
+    return result_set;
+}
 // метод объединения двух множеств
 Set Set::union_set(const Set& s_1, const Set& s_2) {
-    Set result_set = s_1; // создаем копию первого множества
-    result_set.running_set(s_1, s_2);
+    Set result_set; // создаем результирующее множество
+    std::vector<int> vector_for_set_1, vector_for_set_2, result_vector;
+    
+    // формируем два вектора для каждого множества
+    get_vector(s_1._root, vector_for_set_1);
+    get_vector(s_2._root, vector_for_set_2);
+    
+    // изменяем размер результируещего вектора
+    result_vector.resize(vector_for_set_1.size() + vector_for_set_2.size());
+    
+    // объединяем векторы 
+    std::merge(vector_for_set_1.begin(), vector_for_set_1.end(), vector_for_set_2.begin(), vector_for_set_2.end(), result_vector.begin());
+    
+    // удаляем дубликаты элементов
+    result_vector.erase(std::unique(result_vector.begin(), result_vector.end()), result_vector.end());
+    
+    // заполнение нового множества на основе результирующего вектора 
+    for (int i = 0; i < result_vector.size(); i++) 
+        result_set.insert(result_vector[i]);
+
     return result_set;
 }
 // метод cимметрической разности двух множеств
-Set Set::symmetric_difference(const Set& s1, const Set& s2) {
+Set Set::symmetric_difference(const Set& s_1, const Set& s_2) {
     Set result_set;
-    // проходим по всем элементам первого множества
-    result_set.running_set(s_1, s_2);
-    // проходим по всем элементам второго множества
-    result_set.running_set(s_1, s_2);
-    // если элемент не содержится в первом множестве
-    // добавляем его в результат
+    Set tmp1 = Set().union_set(s_1, s_2);
+    Set tmp2 = Set().intersection_set(s_1, s_2);
+
+    std::vector<int> vector_for_tmp_1, vector_for_tmp_2, result_vector;
+
+    // формируем два вектора для каждого множества
+    get_vector(tmp1._root, vector_for_tmp_1);
+    get_vector(tmp2._root, vector_for_tmp_2);
+
+    // изменяем размер результируещего вектора
+    result_vector.resize(vector_for_tmp_1.size() + vector_for_tmp_2.size());
+
+    bool flag = false;
+    for (int i = 0; i < vector_for_tmp_1.size(); i++) {
+        flag = false;
+        for (int j = 0; j < vector_for_tmp_2.size(); j++) 
+            if (vector_for_tmp_1[i] == vector_for_tmp_2[j]) 
+                flag = true;
+        if (!flag) 
+            result_set.insert(vector_for_tmp_1[i]); 
+    }
     return result_set;
 }
