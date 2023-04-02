@@ -17,20 +17,6 @@ private:
     TreeNode* copy_tree(TreeNode* root);
     // рекурсивный метод для вставки узла в дерево
     std::pair<TreeNode*, bool> insert_(TreeNode*& root, int value);
-    /*
-    bool insert_(TreeNode*& root, int value) {
-        if (!root) {
-            root = new TreeNode(value);
-            return true;
-        }
-        if (root->value == value)
-            return false;
-        if (root->value > value)
-            return insert_(root->left, value);
-        else
-            return insert_(root->right, value);
-    }
-    */
     // рекурсивный метод для поиска узла в дереве
     bool contains_(TreeNode* root, int value) const;
     // рекурсивный метод для удаления узла из дерева
@@ -39,6 +25,7 @@ private:
     void print_(TreeNode* root) const;
     // оператор присваивания
     Set& operator=(const Set& tree);
+    void get_vector_(TreeNode* root, std::vector<int>& vector);
 
 public:
     // конструктор
@@ -55,13 +42,6 @@ public:
     bool erase(const int& value);
     // поиск узла в дереве
     bool contains(const int& value);
-
-    // Задача (вар 2)
-    void get_vector(TreeNode* root, std::vector<int>& vector);
-    // метод пересечения двух множеств
-    Set intersection_set(const Set& s_1, const Set& s_2);
-    // метод объединения двух множеств
-    Set union_set(const Set& s_1, const Set& s_2);
-    // метод cимметрической разности двух множеств
-    Set symmetric_difference(const Set& s1, const Set& s2);
+    // формирование вектора из дерева
+    void get_vector(std::vector<int>& vector);
 };
