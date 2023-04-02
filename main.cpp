@@ -43,8 +43,8 @@ Set union_set(Set& s_1, Set& s_2) {
 
     result_vector.erase(std::unique(result_vector.begin(), result_vector.end()), result_vector.end());
 
-    for (int i = 0; i < result_vector.size(); i++)
-        result_set.insert(result_vector[i]);
+    for (const auto& item : result_vector)
+        result_set.insert(item);
 
     return result_set;
 }
@@ -59,17 +59,37 @@ Set symmetric_difference(Set& s_1, Set& s_2) {
     s_1.get_vector(vector_for_tmp_1);
     s_2.get_vector(vector_for_tmp_2);
 
-    result_vector.resize(vector_for_tmp_1.size() + vector_for_tmp_2.size());
+    result_vector.resize(0);
 
+
+    // symmetric difference = union - intersection
     bool flag = false;
-    for (int i = 0; i < vector_for_tmp_1.size(); i++) {
-        flag = false;
-        for (int j = 0; j < vector_for_tmp_2.size(); j++)
-            if (vector_for_tmp_1[i] == vector_for_tmp_2[j])
+    for (const auto& item1 : vector_for_tmp_1) {
+        for (const auto& item2 : vector_for_tmp_2) {
+            if (item1 == item2) {
                 flag = true;
+                break;
+            }
+        }
         if (!flag)
-            result_set.insert(vector_for_tmp_1[i]);
+            result_vector.push_back(item1);
+        flag = false;
     }
+    for (const auto& item1 : vector_for_tmp_2) {
+        for (const auto& item2 : vector_for_tmp_1) {
+            if (item1 == item2) {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag)
+            result_vector.push_back(item1);
+        flag = false;
+    }
+
+    // write result to set
+    for (const auto& item : result_vector)
+        result_set.insert(item);
     return result_set;
 }
 
@@ -82,7 +102,7 @@ void testing_code(){
     int test2 = 10000;
     int test3 = 100000;
     Set set1000, set10000, set100000;
-    
+
     // test 1 - 1000
     // insert
     for (size_t i = 0; i < test1; i++)
@@ -96,7 +116,7 @@ void testing_code(){
     // remove (erase)
     for (size_t i = 0; i < test1; i++)
         set1000.erase(lcg(i));
-    
+
     // test 2 - 10000
     // insert
     for(size_t i = 0; i < test2; i++)
@@ -110,7 +130,7 @@ void testing_code(){
     // remove (erase)
     for (size_t i = 0; i < test2; i++)
         set10000.erase(lcg(i));
-    
+
     // test 3 - 100000
     // insert
     for(size_t i = 0; i < test3; i++)
