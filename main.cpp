@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Set.h"
 #include <chrono>
-
+#include <set>
 
 Set intersection_set(Set& s_1, Set& s_2) {
     Set result_set;
@@ -104,6 +104,7 @@ void testing_code(){
     int test3 = 100000;
     Set set1000, set10000, set100000;
 
+    std::cout << "For my set:\n";
     std::cout << "Test1 - 1000\n";
     // test 1 - 1000
     // insert
@@ -115,72 +116,153 @@ void testing_code(){
     std::cout << "Время заполнения для 1000: " << duration.count() << " ms" << std::endl;
 
     // search (contains)
-    start = std::chrono::high_resolution_clock::now(); 
+    start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < test1; i++)
-        size_t value = lcg(i);
-    end = std::chrono::high_resolution_clock::now(); 
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); 
+        set1000.contains(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "Время поиска для 1000: " << duration.count() << " ms" << std::endl;
 
     // remove (erase)
-    start = std::chrono::high_resolution_clock::now(); 
+    start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < test1; i++)
         set1000.erase(lcg(i));
-    end = std::chrono::high_resolution_clock::now(); 
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); 
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "Время удаления для 1000: " << duration.count() << " ms" << std::endl;
 
     std::cout << "Test2 - 10000\n";
     // test 2 - 10000
     // insert
-    start = std::chrono::high_resolution_clock::now(); 
+    start = std::chrono::high_resolution_clock::now();
     for(size_t i = 0; i < test2; i++)
         set10000.insert(lcg(i));
-    end = std::chrono::high_resolution_clock::now(); 
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); 
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "Время заполнения для 10000: " << duration.count() << " ms" << std::endl;
 
     // search (contains)
-    start = std::chrono::high_resolution_clock::now(); 
+    start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < test2; i++)
-        size_t value = lcg(i);
-    end = std::chrono::high_resolution_clock::now(); 
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); 
+        set10000.contains(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "Время поиска для 10000: " << duration.count() << " ms" << std::endl;
 
     // remove (erase)
-    start = std::chrono::high_resolution_clock::now(); 
+    start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < test2; i++)
         set10000.erase(lcg(i));
-    end = std::chrono::high_resolution_clock::now(); 
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); 
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "Время удаления для 10000: " << duration.count() << " ms" << std::endl;
 
     std::cout << "Test3 - 100000\n";
     // test 3 - 100000
     // insert
-    start = std::chrono::high_resolution_clock::now(); 
+    start = std::chrono::high_resolution_clock::now();
     for(size_t i = 0; i < test3; i++)
         set100000.insert(lcg(i));
-    end = std::chrono::high_resolution_clock::now(); 
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); 
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "Время заполнения для 100000: " << duration.count() << " ms" << std::endl;
 
     // search (contains)
-    start = std::chrono::high_resolution_clock::now(); 
+    start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < test3; i++)
-        size_t value = lcg(i);
-    end = std::chrono::high_resolution_clock::now(); 
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); 
+        set100000.contains(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "Время поиска для 100000: " << duration.count() << " ms" << std::endl;
 
     // remove (erase)
-    start = std::chrono::high_resolution_clock::now(); 
+    start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < test3; i++)
         set100000.erase(lcg(i));
-    end = std::chrono::high_resolution_clock::now(); 
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); 
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "Время удаления для 100000: " << duration.count() << " ms" << std::endl;
+
+    std::cout << "\nFor std::set:\n";
+    std::set<int> std_set1000, std_set10000, std_set100000;
+    std::cout << "Test1 - 1000\n";
+    // test 1 - 1000
+    // insert
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test1; i++)
+        std_set1000.insert(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время заполнения для 1000: " << duration.count() << " ms" << std::endl;
+
+    // search (contains)
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test1; i++)
+        std_set1000.find(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время поиска для 1000: " << duration.count() << " ms" << std::endl;
+
+    // remove (erase)
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test1; i++)
+        std_set1000.erase(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время удаления для 1000: " << duration.count() << " ms" << std::endl;
+
+    std::cout << "Test2 - 10000\n";
+    // test 2 - 10000
+    // insert
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test2; i++)
+        std_set10000.insert(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время заполнения для 10000: " << duration.count() << " ms" << std::endl;
+
+    // search (contains)
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test2; i++)
+        std_set10000.find(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время поиска для 10000: " << duration.count() << " ms" << std::endl;
+
+    // remove (erase)
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test2; i++)
+        std_set10000.erase(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время удаления для 10000: " << duration.count() << " ms" << std::endl;
+
+    std::cout << "Test3 - 100000\n";
+    // test 3 - 100000
+    // insert
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test3; i++)
+        std_set100000.insert(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время заполнения для 100000: " << duration.count() << " ms" << std::endl;
+
+    // search (contains)
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test3; i++)
+        std_set100000.find(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время поиска для 100000: " << duration.count() << " ms" << std::endl;
+
+    // remove (erase)
+    start = std::chrono::high_resolution_clock::now();
+    for (size_t i = 0; i < test3; i++)
+        std_set100000.erase(lcg(i));
+    end = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Время удаления для 100000: " << duration.count() << " ms" << std::endl;
+
 }
 
 int main()
