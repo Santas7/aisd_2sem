@@ -1,87 +1,163 @@
 #include <iostream>
 #include <vector>
 
-void intertion_sort(std::vector<int> &vec);
-void shaker_sort(std::vector<int> &vec);
-void pyramidal_sort(std::vector<int> &vec);
-void sift_down(std::vector<int> &vec, int i, int n);
+struct Stats {
+    size_t comparison_count = 0;
+    size_t copy_count = 0;
+};
+
+// сортировка вставками (O(n^2))
+Stats intertion_sort(std::vector<int>& vec) {
+    Stats stats;
+    for (int i = 1; i < vec.size(); ++i) {
+        for (int j = i; j > 0 && vec[j - 1] > vec[j]; --j) {
+            std::swap(vec[j - 1], vec[j]);
+            ++stats.copy_count;
+            ++stats.comparison_count;
+        }
+    }
+}
+
+// шейкерная сортировка (O(n^2))
+Stats shaker_sort(std::vector<int>& vec) {
+    /*
+     Шейкерная сортировка представляет собой двунаправленную пузырьковую сортировку.
+     Идем по массиву сначала слева направо, перемещая наибольший элемент в конец массива, а затем справа налево,
+     перемещая наименьший элемент в начало массива.
+     */
+    Stats stats;
+    int left = 0; // левая граница
+    int right = vec.size() - 1; // правая граница
+    while (left <= right) { // пока левая граница не сомкнется с правой
+        for (int i = left; i < right; ++i) {
+            if (vec[i] > vec[i + 1]) {
+                std::swap(vec[i], vec[i + 1]);
+                ++stats.copy_count;
+            }
+            ++stats.comparison_count;
+        }
+        --right; // сдвигаем правую границу
+        for (int i = right; i > left; --i) {
+            if (vec[i - 1] > vec[i]) {
+                std::swap(vec[i - 1], vec[i]);
+                ++stats.copy_count;
+            }
+            ++stats.comparison_count;
+        }
+        ++left; // сдвигаем левую границу
+    }
+}
+
+// заполнение вектора
+void fill_vector(std::vector<int>& vec, int size) {
+    for (int i = 0; i < size; ++i) {
+        int value = 0;
+        std::cout << "Enter value: ";
+        std::cin >> value;
+        vec.push_back(value);
+    }
+}
+
+// вывод вектора
+void output_vector(std::vector<int>& vec) {
+    for (int i = 0; i < vec.size(); ++i)
+        std::cout << vec[i] << " ";
+    std::cout << std::endl;
+}
 
 int main() {
-    // 14(10) -> 112(3)
-    std::vector<int> vec1, vec2, vec3;
-
-    // fill vector
-    for (int i = 0; i < 5; ++i){
-        int value = 0;
-        std::cin >> value;
-        vec1.push_back(i);
+    // 14(10) -> 112(3) вариант задания
+    std::vector<int> vec1, vec2;
+    int size = 0;
+    // menu for user switch case
+    while (true){
+        std::cout << "[1] - Заполнение вектора\n[2] - Вывод вектора\n[3] - Сортировка вставками\n[4] - Шейкерная сортировка\n[5] - Тестирование\n--> ";
+        int command;
+        std::cin >> command;
+        switch (command) {
+            case 1:
+                std::cout << "[1] - Вектор 1\n[2] - Вектор 2\n[3] Назад\n--> ";
+                int command2;
+                std::cin >> command2;
+                switch (command2) {
+                    case 1:
+                        std::cout << "Размер вектора: ";
+                        std::cin >> size;
+                        fill_vector(vec1, size);
+                        break;
+                    case 2:
+                        std::cout << "Размер вектора: ";
+                        std::cin >> size;
+                        fill_vector(vec2, size);
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        std::cout << "Error command\n";
+                        break;
+                }
+                break;
+            case 2:
+                std::cout << "[1] - Вектор 1\n[2] - Вектор 2\n[3] Назад\n--> ";
+                int command3;
+                std::cin >> command3;
+                switch (command3) {
+                    case 1:
+                        output_vector(vec1);
+                        break;
+                    case 2:
+                        output_vector(vec2);
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        std::cout << "Error command\n";
+                        break;
+                }
+                break;
+            case 3:
+                std::cout << "[1] - Вектор 1\n[2] - Вектор 2\n[3] Назад\n--> ";
+                int command4;
+                std::cin >> command4;
+                switch (command4) {
+                    case 1:
+                        intertion_sort(vec1);
+                        break;
+                    case 2:
+                        intertion_sort(vec2);
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        std::cout << "Error command\n";
+                        break;
+                }
+                break;
+            case 4:
+                std::cout << "[1] - Вектор 1\n[2] - Вектор 2\n[3] Назад\n--> ";
+                int command5;
+                std::cin >> command5;
+                switch (command5) {
+                    case 1:
+                        shaker_sort(vec1);
+                        break;
+                    case 2:
+                        shaker_sort(vec2);
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        std::cout << "Error command\n";
+                        break;
+                }
+                break;
+            case 5:
+                // тестирование
+                break;
+            default:
+                std::cout << "Error command\n";
+                break;
+        }
     }
-    for (int i = 0; i < 5; ++i){
-        int value = 0;
-        std::cin >> value;
-        vec2.push_back(i);
-    }
-    for (int i = 0; i < 5; ++i){
-        int value = 0;
-        std::cin >> value;
-        vec3.push_back(i);
-    }
-    // sort
-    intertion_sort(vec1);
-    // output vector
-    for (int i = 0; i < 5; ++i)
-        std::cout << vec1[i] << " ";
-    shaker_sort(vec2);
-    // output vector
-    for (int i = 0; i < 5; ++i)
-        std::cout << vec2[i] << " ";
-    pyramidal_sort(vec3);
-    // output vector
-    for (int i = 0; i < 5; ++i)
-        std::cout << vec3[i] << " ";
-    
     return 0;
-}
-
-void intertion_sort(std::vector<int> &vec) {
-    for (int i = 1; i < vec.size(); ++i) {
-        for (int j = i; j > 0 && vec[j - 1] > vec[j]; --j)
-            std::swap(vec[j - 1], vec[j]);
-    }
-}
-
-void shaker_sort(std::vector<int> &vec) {
-    int left = 0;
-    int right = vec.size() - 1;
-    while (left < right) {
-        for (int i = left; i < right; ++i)
-            if (vec[i] > vec[i + 1])
-                std::swap(vec[i], vec[i + 1]);
-        --right;
-        for (int i = right; i > left; --i)
-            if (vec[i - 1] > vec[i])
-                std::swap(vec[i - 1], vec[i]);
-        ++left;
-    }
-}
-
-void sift_down(std::vector<int> &vec, int i, int n) {
-    while (2 * i + 1 < n) {
-        int j = 2 * i + 1;
-        if (j + 1 < n && vec[j + 1] > vec[j])
-            ++j;
-        if (vec[i] >= vec[j])
-            break;
-        std::swap(vec[i], vec[j]);
-        i = j;
-    }
-}
-
-void pyramidal_sort(std::vector<int> &vec) {
-    for (int i = vec.size() / 2 - 1; i >= 0; --i)
-        sift_down(vec, i, vec.size());
-    for (int i = vec.size() - 1; i > 0; --i) {
-        std::swap(vec[0], vec[i]);
-        sift_down(vec, 0, i);
-    }
 }
