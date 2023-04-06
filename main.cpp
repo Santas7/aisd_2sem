@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Set.h"
 #include <chrono>
-#include <set>
+
 
 // пересечение множеств
 Set intersection_set(Set& s_1, Set& s_2) {
@@ -36,7 +36,7 @@ Set intersection_set(Set& s_1, Set& s_2) {
 }
 
 // объединение множеств
-Set union_set(Set& s_1, Set& s_2) {
+Set union_set(Set& s_1, Set& s_2)  {
     Set result_set;
     std::vector<int> vector_for_set_1, vector_for_set_2, result_vector;
 
@@ -123,15 +123,15 @@ void testing_code(){
         for (size_t i = 0; i < 1000; i++)
             set1000.insert(lcg(i));
     auto end = std::chrono::high_resolution_clock::now(); // запоминаем время завершения выполнения
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start); // вычисляем время выполнения в микросекундах
-    std::cout << "Среднее время заполнения для 1000: " << (double)duration.count() / 100 << " ms" << std::endl;
+    std::chrono::duration<double, std::micro> duration = (end - start); // вычисляем время выполнения в микросекундах
+    std::cout << "Среднее время заполнения для 1000: " << (double)duration.count() / 100 << " us" << std::endl;
 
     // search (contains)
     start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < 1000; i++)
         set1000.contains(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время поиска для 1000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     // remove (erase)
@@ -139,7 +139,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         set1000.erase(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время удаления для 1000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     std::cout << "Test2 - 10000\n";
@@ -150,7 +150,7 @@ void testing_code(){
         for(size_t i = 0; i < 10000; i++)
             set10000.insert(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время заполнения для 10000: " << (double)duration.count() / 100  << " ms" << std::endl;
 
     // search (contains)
@@ -158,7 +158,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         set10000.contains(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время поиска для 10000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     // remove (erase)
@@ -166,7 +166,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         set10000.erase(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время удаления для 10000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     std::cout << "Test3 - 100000\n";
@@ -177,7 +177,7 @@ void testing_code(){
         for(size_t i = 0; i < 100000; i++)
             set100000.insert(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время заполнения для 100000: " << (double)duration.count() / 100 << " ms" << std::endl;
 
     // search (contains)
@@ -185,7 +185,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         set100000.contains(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время поиска для 100000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     // remove (erase)
@@ -193,7 +193,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         set100000.erase(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время удаления для 100000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     std::cout << "\nFor std::vector:\n";
@@ -207,7 +207,7 @@ void testing_code(){
         for (size_t i = 0; i < 1000; i++)
             std_set1000.push_back(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время заполнения для 1000: " << (double)duration.count() / 100 << " ms" << std::endl;
 
     // search (contains)
@@ -215,7 +215,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         std::find(std_set1000.begin(), std_set1000.end(), lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время поиска для 1000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     // remove
@@ -223,7 +223,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         std_set1000.erase(std::find(std_set1000.begin(), std_set1000.end(), lcg(i)));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время удаления для 1000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     std::cout << "Test2 - 10000\n";
@@ -234,7 +234,7 @@ void testing_code(){
         for (size_t i = 0; i < 10000; i++)
             std_set10000.push_back(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время заполнения для 10000: " << (double)duration.count() / 100 << " ms" << std::endl;
 
     // search (contains)
@@ -242,7 +242,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         std::find(std_set10000.begin(), std_set10000.end(), lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время поиска для 10000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     // remove (erase)
@@ -250,7 +250,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         std_set10000.erase(std::find(std_set10000.begin(), std_set10000.end(), lcg(i)));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время удаления для 10000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     std::cout << "Test3 - 100000\n";
@@ -261,7 +261,7 @@ void testing_code(){
         for (size_t i = 0; i < 100000; i++)
             std_set100000.push_back(lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время заполнение для 100000: " << (double)duration.count() / 100 << " ms" << std::endl;
 
     // search (contains)
@@ -269,7 +269,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         std::find(std_set100000.begin(), std_set100000.end(), lcg(i));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время поиска для 100000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 
     // remove (erase)
@@ -277,7 +277,7 @@ void testing_code(){
     for (size_t i = 0; i < 1000; i++)
         std_set100000.erase(std::find(std_set100000.begin(), std_set100000.end(), lcg(i)));
     end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    duration = (end - start);
     std::cout << "Среднее время удаления для 100000: " << (double)duration.count() / 1000 << " ms" << std::endl;
 }
 
