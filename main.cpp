@@ -18,16 +18,17 @@ class InsertionSorter : public Sorter {
 public:
     InsertionSorter() = default;
     Stats sort(std::vector<int>& vec) override {
+        auto start = std::chrono::high_resolution_clock::now();
         for (int i = 1; i < vec.size(); ++i) {
-            int j = i;
-            while (j > 0 && vec[j - 1] > vec[j]) {
+            for (int j = i; j > 0 && vec[j - 1] > vec[j]; --j) {
                 std::swap(vec[j - 1], vec[j]);
                 ++stats.copy_count;
-                ++stats.comparison_count;
-                --j;
             }
             ++stats.comparison_count;
         }
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::micro> elapsed_seconds = end - start;
+        std::cout << "Время сортировки вставками: " << elapsed_seconds.count() << "us" << std::endl;
         return stats;
     }
 };
@@ -36,17 +37,18 @@ class ShakerSorter : public Sorter {
 public:
     ShakerSorter() = default;
     Stats sort(std::vector<int>& vec) override {
-        int left = 0;
-        int right = vec.size() - 1;
-        while (left <= right) {
-            for (int i = left; i < right; ++i) {
-                if (vec[i] > vec[i + 1]) {
+        auto start = std::chrono::high_resolution_clock::now();
+        int left = 0; // левая граница
+        int right = vec.size() - 1; // правая граница
+        while (left <= right) { // пока левая граница не пересекла правую
+            for (int i = left; i < right; ++i) { 
+                if (vec[i] > vec[i + 1]) { 
                     std::swap(vec[i], vec[i + 1]);
                     ++stats.copy_count;
                 }
                 ++stats.comparison_count;
             }
-            --right;
+            --right; // сдвигаем правую границу
             for (int i = right; i > left; --i) {
                 if (vec[i - 1] > vec[i]) {
                     std::swap(vec[i - 1], vec[i]);
@@ -54,8 +56,11 @@ public:
                 }
                 ++stats.comparison_count;
             }
-            ++left;
+            ++left; // сдвигаем левую границу
         }
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::micro> elapsed_seconds = end - start;
+        std::cout << "Время шейкерной сортировки: " << elapsed_seconds.count() << "us" << std::endl;
         return stats;
     }
 };
@@ -64,6 +69,7 @@ class BubbleSorter : public Sorter {
 public:
     BubbleSorter() = default;
     Stats sort(std::vector<int>& vec) override {
+        auto start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < vec.size(); ++i) {
             for (int j = 0; j < vec.size() - i - 1; ++j) {
                 if (vec[j] > vec[j + 1]) {
@@ -73,6 +79,9 @@ public:
                 ++stats.comparison_count;
             }
         }
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::micro> elapsed_seconds = end - start;
+        std::cout << "Время сортировки пузырьком: " << elapsed_seconds.count() << "us" << std::endl;
         return stats;
     }
 };
@@ -86,9 +95,8 @@ int lcg() {
 
 // заполнение вектора
 void fill_vector(std::vector<int>& vector) {
-    for (size_t i = 0; i < vector.size(); ++i) {
+    for (size_t i = 0; i < vector.size(); ++i) 
         vector[i] = lcg();
-    }
 }
 
 // вывод вектора
@@ -107,8 +115,7 @@ void testing_code_1(){
 
     std::vector<unsigned long long> comp;
     std::vector<unsigned long long> copy;
-
-    // choise panel sort
+    
     InsertionSorter insertion_sorter;
     ShakerSorter shaker_sorter;
     BubbleSorter bubble_sorter;
@@ -220,15 +227,13 @@ void testing_code_1(){
 
 void testing_code_2(){
     std::vector<int> vector(0);
-    //int size = 1000;
     int size2= 0;
     unsigned long long count_comp = 0;
     unsigned long long count_copy = 0;
 
     std::vector<unsigned long long> comp;
     std::vector<unsigned long long> copy;
-
-    // choise panel sort
+    
     InsertionSorter insertion_sorter;
     ShakerSorter shaker_sorter;
     BubbleSorter bubble_sorter;
@@ -332,15 +337,13 @@ void testing_code_2(){
 }
 void testing_code_3(){
     std::vector<int> vector(0);
-    //int size = 1000;
     int size2= 0;
     unsigned long long count_comp = 0;
     unsigned long long count_copy = 0;
 
     std::vector<unsigned long long> comp;
     std::vector<unsigned long long> copy;
-
-    // choise panel sort
+    
     InsertionSorter insertion_sorter;
     ShakerSorter shaker_sorter;
     BubbleSorter bubble_sorter;
@@ -444,17 +447,15 @@ void testing_code_3(){
 }
 
 
-
 int main() {
     // 14(10) -> 112(3) вариант задания
     std::vector<int> vector(0);
-    int size = 0;
-    int command2 = 0;
-    // menu for user switch case
+    int size = 0, command2 = 0;
     InsertionSorter insertion_sorter;
     ShakerSorter shaker_sorter;
     BubbleSorter bubble_sorter;
-
+    
+    // главное меню программы
     while (true){
         std::cout << "[1] - Создать случайный вектор\n"
                   << "[2] - Вывести вектор\n"
@@ -498,12 +499,15 @@ int main() {
                 std::cin >> command2;
                 switch (command2) {
                     case 1:
+                        // тест 1 (а)
                         testing_code_1();
                         break;
                     case 2:
+                        // тест 2 (б)
                         testing_code_2();
                         break;
                     case 3:
+                        // тест 3 (в)
                         testing_code_3();
                         break;
                     case 4:
