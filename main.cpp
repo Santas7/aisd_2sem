@@ -21,7 +21,9 @@ public:
         auto start = std::chrono::high_resolution_clock::now();
         for (int i = 1; i < vec.size(); ++i) {
             for (int j = i; j > 0 && vec[j - 1] > vec[j]; --j) {
-                std::swap(vec[j - 1], vec[j]);
+                auto tmp = vec[j];
+                vec[j] = vec[j - 1];
+                vec[j - 1] = tmp;
                 ++stats.copy_count;
             }
             ++stats.comparison_count;
@@ -32,6 +34,7 @@ public:
         return stats;
     }
 };
+
 // шейкерная сортировка
 class ShakerSorter : public Sorter {
 public:
@@ -41,9 +44,11 @@ public:
         int left = 0; // левая граница
         int right = vec.size() - 1; // правая граница
         while (left <= right) { // пока левая граница не пересекла правую
-            for (int i = left; i < right; ++i) { 
-                if (vec[i] > vec[i + 1]) { 
-                    std::swap(vec[i], vec[i + 1]);
+            for (int i = left; i < right; ++i) {
+                if (vec[i] > vec[i + 1]) {
+                    auto tmp = vec[i];
+                    vec[i] = vec[i + 1];
+                    vec[i + 1] = tmp;
                     ++stats.copy_count;
                 }
                 ++stats.comparison_count;
@@ -51,7 +56,9 @@ public:
             --right; // сдвигаем правую границу
             for (int i = right; i > left; --i) {
                 if (vec[i - 1] > vec[i]) {
-                    std::swap(vec[i - 1], vec[i]);
+                    auto tmp = vec[i];
+                    vec[i] = vec[i - 1];
+                    vec[i - 1] = tmp;
                     ++stats.copy_count;
                 }
                 ++stats.comparison_count;
@@ -64,6 +71,7 @@ public:
         return stats;
     }
 };
+
 // сортировка пузырьком
 class BubbleSorter : public Sorter {
 public:
@@ -73,7 +81,9 @@ public:
         for (int i = 0; i < vec.size(); ++i) {
             for (int j = 0; j < vec.size() - i - 1; ++j) {
                 if (vec[j] > vec[j + 1]) {
-                    std::swap(vec[j], vec[j + 1]);
+                    auto tmp = vec[j];
+                    vec[j] = vec[j + 1];
+                    vec[j + 1] = tmp;
                     ++stats.copy_count;
                 }
                 ++stats.comparison_count;
@@ -95,7 +105,7 @@ int lcg() {
 
 // заполнение вектора
 void fill_vector(std::vector<int>& vector) {
-    for (size_t i = 0; i < vector.size(); ++i) 
+    for (size_t i = 0; i < vector.size(); ++i)
         vector[i] = lcg();
 }
 
@@ -105,6 +115,7 @@ void output_vector(std::vector<int>& vector) {
         std::cout << item << " ";
     std::cout << std::endl;
 }
+
 // тестирование
 void testing_code_1(){
     std::vector<int> vector(0);
@@ -115,7 +126,7 @@ void testing_code_1(){
 
     std::vector<unsigned long long> comp;
     std::vector<unsigned long long> copy;
-    
+
     InsertionSorter insertion_sorter;
     ShakerSorter shaker_sorter;
     BubbleSorter bubble_sorter;
@@ -132,9 +143,8 @@ void testing_code_1(){
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
                     for (size_t j = 0; j < 100; ++j) {
-                        for (size_t i = 0; i < vector.size(); ++i) {
+                        for (size_t i = 0; i < vector.size(); ++i) 
                             vector[i] = lcg();
-                        }
                         insertion_sorter.sort(vector);
                         count_comp += insertion_sorter.stats.comparison_count;
                         count_copy += insertion_sorter.stats.copy_count;
@@ -161,9 +171,8 @@ void testing_code_1(){
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
                     for (size_t j = 0; j < 100; ++j) {
-                        for (size_t i = 0; i < vector.size(); ++i) {
+                        for (size_t i = 0; i < vector.size(); ++i) 
                             vector[i] = lcg();
-                        }
                         shaker_sorter.sort(vector);
                         count_comp += shaker_sorter.stats.comparison_count;
                         count_copy += shaker_sorter.stats.copy_count;
@@ -190,9 +199,8 @@ void testing_code_1(){
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
                     for (size_t j = 0; j < 100; ++j) {
-                        for (size_t i = 0; i < vector.size(); ++i) {
+                        for (size_t i = 0; i < vector.size(); ++i) 
                             vector[i] = lcg();
-                        }
                         bubble_sorter.sort(vector);
                         count_comp += bubble_sorter.stats.comparison_count;
                         count_copy += bubble_sorter.stats.copy_count;
@@ -223,8 +231,6 @@ void testing_code_1(){
         }
     }
 }
-
-
 void testing_code_2(){
     std::vector<int> vector(0);
     int size2= 0;
@@ -233,7 +239,7 @@ void testing_code_2(){
 
     std::vector<unsigned long long> comp;
     std::vector<unsigned long long> copy;
-    
+
     InsertionSorter insertion_sorter;
     ShakerSorter shaker_sorter;
     BubbleSorter bubble_sorter;
@@ -249,9 +255,8 @@ void testing_code_2(){
             case 1:
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
-                    for (size_t i = 0; i < vector.size(); ++i) {
+                    for (size_t i = 0; i < vector.size(); ++i) 
                         vector[i] = (int)i;
-                    }
                     insertion_sorter.sort(vector);
                     count_comp += insertion_sorter.stats.comparison_count;
                     count_copy += insertion_sorter.stats.copy_count;
@@ -276,9 +281,8 @@ void testing_code_2(){
             case 2:
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
-                    for (size_t i = 0; i < vector.size(); ++i) {
+                    for (size_t i = 0; i < vector.size(); ++i) 
                         vector[i] = (int)i;
-                    }
                     shaker_sorter.sort(vector);
                     count_comp += shaker_sorter.stats.comparison_count;
                     count_copy += shaker_sorter.stats.copy_count;
@@ -303,9 +307,8 @@ void testing_code_2(){
             case 3:
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
-                    for (size_t i = 0; i < vector.size(); ++i) {
+                    for (size_t i = 0; i < vector.size(); ++i) 
                         vector[i] = (int)i;
-                    }
                     bubble_sorter.sort(vector);
                     count_comp += bubble_sorter.stats.comparison_count;
                     count_copy += bubble_sorter.stats.copy_count;
@@ -343,7 +346,7 @@ void testing_code_3(){
 
     std::vector<unsigned long long> comp;
     std::vector<unsigned long long> copy;
-    
+
     InsertionSorter insertion_sorter;
     ShakerSorter shaker_sorter;
     BubbleSorter bubble_sorter;
@@ -358,10 +361,8 @@ void testing_code_3(){
             case 1:
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
-                    std::fill_n(vector.begin(), size, 0);
-                    for (size_t i = vector.size() - 1; i != 0; --i) {
+                    for (size_t i = vector.size() - 1; i != 0; --i) 
                         vector[i] = (int)i;
-                    }
                     insertion_sorter.sort(vector);
                     count_comp += insertion_sorter.stats.comparison_count;
                     count_copy += insertion_sorter.stats.copy_count;
@@ -386,9 +387,8 @@ void testing_code_3(){
             case 2:
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
-                    for (size_t i = vector.size() - 1; i != 0; --i) {
+                    for (size_t i = vector.size() - 1; i != 0; --i) 
                         vector[i] = (int)i;
-                    }
                     shaker_sorter.sort(vector);
                     count_comp += shaker_sorter.stats.comparison_count;
                     count_copy += shaker_sorter.stats.copy_count;
@@ -413,9 +413,8 @@ void testing_code_3(){
             case 3:
                 for (int size = 1000; size <= 100000; size += 1000){
                     vector.resize(size);
-                    for (size_t i = vector.size() - 1; i != 0; --i) {
+                    for (size_t i = vector.size() - 1; i != 0; --i) 
                         vector[i] = (int)i;
-                    }
                     bubble_sorter.sort(vector);
                     count_comp += bubble_sorter.stats.comparison_count;
                     count_copy += bubble_sorter.stats.copy_count;
@@ -446,7 +445,6 @@ void testing_code_3(){
     }
 }
 
-
 int main() {
     // 14(10) -> 112(3) вариант задания
     std::vector<int> vector(0);
@@ -454,7 +452,7 @@ int main() {
     InsertionSorter insertion_sorter;
     ShakerSorter shaker_sorter;
     BubbleSorter bubble_sorter;
-    
+
     // главное меню программы
     while (true){
         std::cout << "[1] - Создать случайный вектор\n"
