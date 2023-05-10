@@ -1,52 +1,56 @@
-//
-// Created by ANDREY on 5/3/23.
-//
-
-#ifndef AISD_LABA_3_GRAPH_H
-#define AISD_LABA_3_GRAPH_H
 #include <iostream>
 #include <vector>
 #include <list>
 #include <stack>
+#include <string>
+#include <limits>
 #include <unordered_map>
 #include <unordered_set>
+// #include "Graphics.h"
 
 // шаблонный класс графа
 template<typename Vertex, typename Distance = double>
 class Graph{
 private:
-    struct Edge{
+    struct Edge {
         Vertex from; // откуда
         Vertex to; // куда
         Distance distance;
         Edge(int from, int to, Distance distance) : from(from), to(to), distance(distance) {}
+        Edge() = default;
     };
     // вершины и список ребер
-    std::vector<std::pair<Vertex, std::list<Edge>>> _data;
+    std::unordered_map<Vertex, std::vector<Edge>> _data;
 public:
     // проверка наличия вершины в графе
     bool has_vertex(const Vertex& v) const{
-        for (auto& item : _data)
-            if (item.first == v)
-                return true;
-        return false;
+        return _data.count(v) > 0;
     }
 
     // добавление вершины
     void add_vertex(const Vertex& v){
         if (has_vertex(v))
-            throw std::invalid_argument("Вершина уже существует");
-        _data.push_back(std::make_pair(v, std::list<Edge>()));
-        //_data.push_back({v, std::list<Edge>()});
+            throw std::invalid_argument("Вершина уже существует!");
+        _data[v] = std::vector<Edge>();
     }
 
     // удаление вершины
     bool remove_vertex(const Vertex& v){
         if (!has_vertex(v))
             return false;
-        for (auto& item : _data)
-            if (item.first == v)
-                _data.erase(item);
+        for (auto& pair : _data) {
+            auto pred = [&](const auto& edge) {
+                return edge.to == v;
+            };
+
+            auto vector_iter = std::find_if(pair.second.begin(), pair.second.end(), pred);
+
+            while (vector_iter != pair.second.end()) {
+                auto tmp_begin = pair.second.erase(vector_iter);
+
+                vector_iter = std::find_if(tmp_begin, pair.second.end(), pred);
+            }
+        }
         return true;
     }
 
@@ -58,74 +62,113 @@ public:
         return result;
     }
 
-
     // добавление ребра в граф
     void add_edge(const Vertex& from, const Vertex& to, const Distance& d){
-        if (!has_vertex(from) || !has_vertex(to))
-            throw std::invalid_argument("Вершина не найдена!");
-        for (auto& item : _data)
-            if (item.first == from)
-                item.second.push_back(Edge(from, to, d));
-    }
-
-    // удаление ребра из графа с учетом направления (from -> to)
-    bool remove_edge(const Vertex& from, const Vertex& to){
-        if (!has_vertex(from) || !has_vertex(to))
-            return false; // вершины не найдены
-        for (auto& item : _data)
-            if (item.first == from)
-                for (auto& item2 : item.second)
-                    if (item2.to == to)
-                        item.second.erase(item2);
-        return true;
+        if (!has_vertex(from))
+            throw std::invalid_argument("Нет вершины from!");
+        if (!has_vertex(to))
+            throw std::invalid_argument("Нет вершины to!");
+        _data[from].push_back(Edge(from, to, d));
     }
 
     // удаление ребра из графа
-    bool remove_edge(const Edge& e){
+    bool remove_edge(const Vertex& from, const Vertex& to){
+        if (!has_vertex(from) || !has_vertex(to))
+            return false;
+        auto pred = [&from, &to](const auto& edge) {
+            return edge.from == from && edge.to == to;
+        };
+
+        bool is_removed = false;
+        auto vector_iter = std::find_if(_data.at(from).begin(), _data.at(from).end(), pred);
+
+        while (vector_iter != _data.at(from).end()) {
+            auto tmp_begin = _data.at(from).erase(vector_iter);
+
+            vector_iter = std::find_if(tmp_begin, _data.at(from).end(), pred);
+
+            is_removed = true;
+        }
+        return is_removed;
+
+        return false;
+    }
+
+    // удаление ребра из графа
+    bool remove_edge(const Edge& e) {
         if (!has_vertex(e.from) || !has_vertex(e.to))
             return false;
+
+        auto pred = [&e](const auto& edge) {
+            return edge.from == e.from && edge.to == e.to;
+        };
+
+        bool is_removed = false;
+        auto vector_iter = std::find_if(_data.at(e.from).begin(), _data.at(e.from).end(), pred);
+
+        while (vector_iter != _data.at(e.from).end()) {
+            auto tmp_begin = _data.at(e.from).erase(vector_iter);
+
+            vector_iter = std::find_if(tmp_begin, _data.at(e.from).end(), pred);
+
+            is_removed = true;
+        }
+        return is_removed;
+    }
+
+    // генерация случайного графа
+    void generate_random_graph(size_t count){
+        for (size_t i = 0; i < count; i++)
+            add_vertex(i);
+        for (size_t i = 0; i < count; i++){
+            auto n = rand() % count;
+            for (size_t j = 0; j < n; j++)
+                if (i != j)
+                    add_edge(i, j, rand() % 100);
+        }
+    }
+
+    // вывод графа в консоль
+    void print() const{
+        // вершины
+        std::cout << "Вершины: ";
         for (auto& item : _data)
-            if (item.first == e.from)
-                for (auto& item2 : item.second)
-                    if (item2.to == e.to)
-                        item.second.erase(item2);
-        return true;
+            std::cout << item.first << " ";
+        std::cout << std::endl;
+        // ребра
+        std::cout << "Ребра: " << std::endl;
+        for (auto& item : _data)
+            for (auto& item2 : item.second)
+                std::cout << item2.from << " -> " << item2.to << " (" << item2.distance << ")" << std::endl;
     }
 
     // проверка наличия ребра в графе с учетом направления (from -> to)
-    bool has_edge(const Vertex& from, const Vertex& to) const {
-        if (!has_vertex(from) || !has_vertex(to))
-            return false; // вершины не найдены
-        for (auto& item : _data)
-            if (item.first == from)
-                for (auto& item2 : item.second)
-                    if (item2.to == to)
-                        return true;
+    bool has_edge(const Vertex& from, const Vertex& to) const{
+        if (!has_vertex(from))
+            return false;
+        if (!has_vertex(to))
+            return false;
+        for (auto& item : _data.at(from))
+            if (item.to == to)
+                return true;
         return false;
     }
 
     // проверка наличия ребра в графе
-    bool has_edge (const Edge& e){
+    bool has_edge(const Edge& e) const{
         if (!has_vertex(e.from) || !has_vertex(e.to))
             return false;
-        for (auto& item : _data)
-            if (item.first == e.from)
-                for (auto& item2 : item.second)
-                    if (item2.to == e.to)
-                        return true;
+        for (auto& item : _data.at(e.from))
+            if (item.to == e.to)
+                return true;
         return false;
     }
 
-    // получение всех ребер, выходящих из вершины (все ребра, у которых from == vertex)
+    // получение всех ребер выходящих из вершины
     std::vector<Edge> edges(const Vertex& vertex) const{
-        if (!has_vertex(vertex))
-            throw std::invalid_argument("Vertex not found");
-        std::vector<Edge> result;
-        for (auto& item : _data)
-            if (item.first == vertex)
-                for (auto& item2 : item.second)
-                    result.push_back(item2);
-        return result;
+        if (!has_vertex(vertex) || _data.at(vertex).empty())
+            throw std::invalid_argument("Нет вершины vertex!");
+        return _data.at(vertex);
     }
 
     // получение порядка графа (количество вершин)
@@ -142,97 +185,86 @@ public:
     }
 
     // поиск кратчайшего пути по алгоритму Беллмана-Форда
-    std::vector<Edge> shortest_path(const Vertex& from, const Vertex& to) const{
+    std::vector<Edge> shortest_path(const Vertex& from, const Vertex& to, Distance* dist=nullptr) const{
         if (!has_vertex(from) || !has_vertex(to))
-            throw std::invalid_argument("Вершины не найдены!");
+            throw std::invalid_argument("Вершина не найдена!");
 
-        std::vector<Edge> result;
-        // Инициализация вектора расстояний и предшественников
-        std::unordered_map<Vertex, Distance> distance;
-        std::unordered_map<Vertex, Vertex> prev;
-
-        for (const auto& item : _data) {
-            distance[item.first] = std::numeric_limits<Distance>::max();
-            prev[item.first] = from;
+        // инициализация расстояний и предков для каждой вершины
+        std::vector<Edge> result; // результирующий путь
+        std::unordered_map<Vertex, Distance> distance; // расстояния
+        std::unordered_map<Vertex, Edge> prev; // предки
+        for (auto& item : _data){
+            distance[item.first] = std::numeric_limits<Distance>::max(); // расстояние от from до всех остальных вершин - бесконечность
         }
         distance[from] = 0;
 
-        // Релаксация всех ребер графа |V| - 1 раз
-        for (size_t i = 1; i < _data.size(); ++i) {
-            for (const auto& item : _data) {
-                Vertex u = item.first;
-                const auto& edges = item.second;
-                for (const Edge& edge : edges) {
-                    Vertex v = edge.to;
-                    Distance new_dist = distance[u] + edge.distance;
-                    if (distance[u] != std::numeric_limits<Distance>::max() && new_dist < distance[v]) {
-                        distance[v] = new_dist;
-                        distance[v] = u;
+        // алгоритм Беллмана-Форда (поиск кратчайшего пути)
+        // order() - количество вершин
+        for (size_t i = 0; i < order() - 1; ++i) {
+            for (const auto& pair : _data) {
+                for (const auto& edge : pair.second) {
+                    if (distance[edge.from] + edge.distance < distance[edge.to]) {
+                        distance[edge.to] = distance[edge.from] + edge.distance;
+                        prev[edge.to] = edge;
                     }
                 }
             }
         }
 
-        // Проверка наличия циклов отрицательного веса
-        for (const auto& item : _data) {
-            Vertex u = item.first;
-            for (const Edge& edge : item.second) {
-                Vertex v = edge.to;
-                Distance new_dist = distance[u] + edge.distance;
-                if (distance[u] != std::numeric_limits<Distance>::max() && new_dist < distance[v]) {
-                    throw std::runtime_error("Граф содержит отрицательный цикл!");
-                }
-            }
+        for (const auto& pair : _data)
+            for (const auto& edge : pair.second)
+                if (distance[edge.from] + edge.distance < distance[edge.to])
+                    throw std::runtime_error("Граф имеет отрицательный цикл");
+
+        if (distance[to] == std::numeric_limits<Distance>::max()) {
+            throw std::invalid_argument("Ошибка! Эти вершины не связаны!");
+        }
+        // восстановление пути
+        Vertex current = to; // текущая вершина - конечная
+
+        while (current != from) {
+            result.push_back(prev[current]);
+            current = prev[current].from;
         }
 
-        // Восстановление пути
-        if (distance[to] != std::numeric_limits<Distance>::max()) {
-            Vertex current = to;
-            while (current != from) {
-                Vertex prev_vertex = prev[current];
-                result.push_back(Edge(prev_vertex, current, distance[current] - distance[prev_vertex]));
-                current = prev_vertex;
-            }
-            std::reverse(result.begin(), result.end());
-        }
-
+        std::reverse(result.begin(), result.end()); // разворачиваем путь (т.к. мы восстанавливали его с конца)
         return result;
     }
 
     // Обход графа в глубину, начиная с вершины start_vertex
     std::vector<Vertex> walk(const Vertex& start_vertex) const {
         // Проверяем наличие стартовой вершины в графе
-        if (!has_vertex(start_vertex)) {
+        if (!has_vertex(start_vertex))
             throw std::invalid_argument("Стартовая вершина не найдена!");
-        }
 
-        // Инициализация структур данных для обхода
-        std::vector<Vertex> visited; // Вектор для хранения посещенных вершин
-        std::unordered_set<Vertex> visited_set; // Множество для проверки, была ли вершина уже посещена
-        std::stack<Vertex> stack; // Стек для хранения вершин, ожидающих обработки
+        // Список посещенных вершин
+        std::vector<Vertex> visited;
+        // Список вершин, которые нужно посетить
+        std::stack<Vertex> stack;
+        // Добавляем стартовую вершину в список посещенных
+        visited.push_back(start_vertex);
+        // Добавляем стартовую вершину в стек
         stack.push(start_vertex);
 
+        // Пока стек не пуст
         while (!stack.empty()) {
-            Vertex current_vertex = stack.top();
-            stack.pop(); // Удаляем вершину из стека
-
-            // Если вершина еще не была посещена, обрабатываем ее
-            if (visited_set.find(current_vertex) == visited_set.end()) {
-                visited.push_back(current_vertex); // Добавляем вершину в список посещенных
-                visited_set.insert(current_vertex); // Добавляем вершину в множество посещенных
-                // Добавляем соседей текущей вершины в стек для дальнейшего обхода
-                std::vector<Edge> adjacent_edges = edges(current_vertex);
-                for (const Edge& edge : adjacent_edges) {
-                    Vertex neighbor = edge.to;
-                    if (visited_set.find(neighbor) == visited_set.end()) {
-                        stack.push(neighbor);
-                    }
+            // Получаем вершину из стека
+            Vertex current = stack.top();
+            // Удаляем вершину из стека
+            stack.pop();
+            // Получаем список смежных вершин
+            auto edges = this->edges(current);
+            // Перебираем все смежные вершины
+            for (auto& edge : edges) {
+                // Если вершина еще не посещена
+                if (std::find(visited.begin(), visited.end(), edge.to) == visited.end()) {
+                    // Добавляем вершину в список посещенных
+                    visited.push_back(edge.to);
+                    // Добавляем вершину в стек
+                    stack.push(edge.to);
                 }
             }
         }
         return visited;
     }
-
 };
-
-#endif //AISD_LABA_3_GRAPH_H
