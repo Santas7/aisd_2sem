@@ -49,7 +49,7 @@ public:
         if (!has_vertex(v))
             return false;
         for (auto& pair : _data) {
-            auto pred = [&](const auto& edge) {
+            auto pred = [&v](const auto& edge) {
                 return edge.to == v;
             };
             auto vector_iter = std::find_if(pair.second.begin(), pair.second.end(), pred);
@@ -88,7 +88,6 @@ public:
          * from - откуда идет, to - куда идет
          * [&] - захват по ссылке ребра, pred - предикат для поиска ребра
          * find_if ищет элемент, для которого предикат возвращает true
-         * vector_iter != _data.at(from).end() -
          */
         if (!has_vertex(from) || !has_vertex(to))
             return false;
@@ -113,7 +112,7 @@ public:
         if (!has_vertex(e.from) || !has_vertex(e.to))
             return false;
         auto pred = [&e](const auto& edge) {
-            return edge.from == e.from && edge.to == e.to;
+            return edge.from == e.from && edge.to == e.to && edge.distance == e.distance;
         };
         bool is_removed = false;
         auto vector_iter = std::find_if(_data.at(e.from).begin(), _data.at(e.from).end(), pred);
@@ -138,6 +137,7 @@ public:
                 if (i != j)
                     add_edge(i, j, rand() % 100);
         }
+
     }
 
     void print() const{
@@ -247,7 +247,7 @@ public:
             for (const auto& edge : pair.second)
                 if (distance[edge.from] + edge.distance < distance[edge.to])
                     throw std::runtime_error("Граф имеет отрицательный цикл");
-        // если путь не найден (расстояние до вершины равно максимальному значению)
+        // если путь не найден (расстояние до вершины равно максимальному значению - бесконечности)
         if (distance[to] == std::numeric_limits<Distance>::max()) {
             *dist = std::numeric_limits<Distance>::max();
             return {};
@@ -282,8 +282,7 @@ public:
         while (!stack.empty()) {
             Vertex current = stack.top();
             stack.pop();
-            std::vector<Edge> edges = this->edges(current);
-            for (const auto& edge : edges) {
+            for (const auto& edge : _data.at(current)) {
                 if (std::find(visited.begin(), visited.end(), edge.to) == visited.end()) {
                     visited.push_back(edge.to);
                     stack.push(edge.to);
