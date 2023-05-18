@@ -14,25 +14,23 @@ Vertex find_optimal(const Graph<Vertex, Distance>& graph) {
      */
     if (graph.order() == 0)
         throw std::invalid_argument("Ошибка! Пустой граф не имеет центра.\n");
-    std::unordered_map<Vertex, Distance> distance_vertex;
+    Distance min_distance = std::numeric_limits<Distance>::max();
+    Vertex min_vertex = 0;
     for (auto& item_i : graph.vertices()){
-        distance_vertex[item_i] = 0;
+        Distance d = 0;
         for (auto& item_j : graph.vertices()){
             Distance current_distance = 0;
             graph.shortest_path(item_i, item_j, &current_distance);
-            // если путь не существует, то -> расстояние до этой вершины бесконечность
-            if (current_distance == std::numeric_limits<Distance>::max() || distance_vertex[item_i] == std::numeric_limits<Distance>::max())
-                distance_vertex[item_i] = std::numeric_limits<Distance>::max();
+            // если путь не сущ-т, то -> расстояние до этой вершины бесконечность
+            if (current_distance == std::numeric_limits<Distance>::max() || d == std::numeric_limits<Distance>::max())
+                d = std::numeric_limits<Distance>::max();
             else
-                distance_vertex[item_i] += current_distance;
+                if (d < current_distance)
+                    d = current_distance;
         }
-    }
-    Vertex min_vertex = std::numeric_limits<Distance>::min();
-    Distance min_distance = std::numeric_limits<Distance>::max();
-    for (auto& pair : distance_vertex){
-        if (pair.second < min_distance){
-            min_distance = pair.second;
-            min_vertex = pair.first;
+        if (d < min_distance){
+            min_distance = d;
+            min_vertex = item_i;
         }
     }
     return min_vertex;
@@ -176,6 +174,7 @@ int main() {
                                             int vertex;
                                             std::cin >> vertex;
                                             graph.add_vertex(vertex);
+                                            std::cout << "Вершина успешно добавлена!\n";
                                         }
                                         catch (std::invalid_argument& e){
                                             std::cout << e.what() << std::endl;
@@ -195,6 +194,7 @@ int main() {
                                             double weight;
                                             std::cin >> weight;
                                             graph.add_edge(start_vertex, end_vertex, weight);
+                                            std::cout << "Ребро успешно добавлено!\n";
                                         }
                                         catch (std::invalid_argument& e){
                                             std::cout << e.what() << std::endl;
@@ -296,6 +296,7 @@ int main() {
                                             int vertex;
                                             std::cin >> vertex;
                                             graph.remove_vertex(vertex);
+                                            std::cout << "Вершина успешно удалена из графа!\n";
                                         }
                                         catch (std::invalid_argument& e){
                                             std::cout << e.what() << std::endl;
@@ -312,6 +313,7 @@ int main() {
                                             int end_vertex;
                                             std::cin >> end_vertex;
                                             graph.remove_edge(start_vertex, end_vertex);
+                                            std::cout << "Ребро успешно удалено из графа!\n";
                                         }
                                         catch (std::invalid_argument& e){
                                             std::cout << e.what() << std::endl;
@@ -360,7 +362,7 @@ int main() {
                         case 6:
                         {
                             try{
-                                std::cout << "Степень графа: " << graph.degree() << std::endl;
+                                std::cout << "Макс.Степень вершины графа: " << graph.degree() << std::endl;
                             }
                             catch (std::invalid_argument& e){
                                 std::cout << e.what() << std::endl;
@@ -383,8 +385,8 @@ int main() {
             case 7:
             {
                 while(true){
-                    std::cout << "[1] граф с вершинами 1, 2, 3, 4\n"
-                              << "[2] граф с вершинами 1, 2, 3, 4, 5\n"
+                    std::cout << "[1] Граф с вершинами 1, 2, 3, 4\n"
+                              << "[2] Граф с вершинами 1, 2, 3, 4, 5\n"
                               << "[0] Назад\n"
                               << "--> ";
                     int command3;
